@@ -1,0 +1,574 @@
+/* ═══════════════════════════════════════════════════════════════
+   SALOON ALI — Luxury Barbershop Link-in-Bio
+   Elite Creative Direction · Premium Dark Gold Theme
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ───────────────────────────────────────────── */
+:root {
+  --gold:           #C4A35A;
+  --gold-lt:        #E8C97A;
+  --gold-dk:        #8B6914;
+  --gold-xlt:       #F5E0A0;
+  --gold-glow:      rgba(196, 163, 90, 0.35);
+  --gold-glow-str:  rgba(196, 163, 90, 0.65);
+  --black:          #07070A;
+  --black-2:        #0D0D14;
+  --glass:          rgba(255, 255, 255, 0.030);
+  --glass-hover:    rgba(255, 255, 255, 0.058);
+  --glass-border:   rgba(196, 163, 90, 0.20);
+  --glass-border-h: rgba(196, 163, 90, 0.60);
+  --text:           #F2EEE7;
+  --text-muted:     #8A8880;
+  --text-dim:       #3A3834;
+  --radius:         18px;
+  --ease:           cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ── Reset & Base ────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--black);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Touch: restore default cursor */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  .cursor-glow { display: none !important; }
+}
+
+/* ── Custom Cursor ───────────────────────────────────────────── */
+.cursor-glow {
+  pointer-events: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(240, 220, 150, 0.95) 0%,
+    rgba(196, 163, 90, 0.5)  45%,
+    transparent 72%
+  );
+  box-shadow:
+    0 0 18px 6px rgba(196, 163, 90, 0.28),
+    0 0 40px 10px rgba(196, 163, 90, 0.08);
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transition: width 0.35s var(--ease),
+              height 0.35s var(--ease),
+              opacity 0.3s ease;
+  will-change: left, top;
+}
+
+.cursor-glow.hovered {
+  width: 54px; height: 54px;
+}
+
+/* ── Particle Canvas ─────────────────────────────────────────── */
+#particleCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Atmospheric Orbs ────────────────────────────────────────── */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  animation: orbDrift 22s var(--ease) infinite alternate;
+  will-change: transform;
+}
+
+.orb-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(196,163,90,0.18) 0%, transparent 68%);
+  top: -200px; right: -180px;
+  animation-duration: 20s;
+}
+
+.orb-2 {
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(80,30,160,0.14) 0%, transparent 68%);
+  bottom: 15%; left: -120px;
+  animation-duration: 27s;
+  animation-delay: -8s;
+}
+
+.orb-3 {
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(196,163,90,0.10) 0%, transparent 68%);
+  bottom: -80px; right: 25%;
+  animation-duration: 17s;
+  animation-delay: -13s;
+}
+
+@keyframes orbDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(50px, -70px) scale(1.08); }
+  66%  { transform: translate(-40px, 35px) scale(0.96); }
+  100% { transform: translate(25px, 55px) scale(1.04); }
+}
+
+/* ── Page Wrapper ────────────────────────────────────────────── */
+.main-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 3.5rem) 1.5rem
+    calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.8rem;
+  width: 100%;
+  opacity: 0; /* GSAP animates */
+}
+
+/* ── Logo ────────────────────────────────────────────────────── */
+.logo-container {
+  position: relative;
+  width: 136px; height: 136px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+
+.logo-ring-outer,
+.logo-ring-mid,
+.logo-ring-inner {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold);
+}
+
+.logo-ring-outer {
+  inset: 0;
+  animation: ringPulse 3s ease-in-out infinite;
+  border-color: rgba(196,163,90,0.65);
+}
+
+.logo-ring-mid {
+  inset: 9px;
+  border-color: rgba(196,163,90,0.3);
+  animation: ringPulse 3s ease-in-out infinite 0.5s;
+}
+
+.logo-ring-inner {
+  inset: 18px;
+  border-color: rgba(196,163,90,0.15);
+  animation: ringPulse 3s ease-in-out infinite 1s;
+}
+
+@keyframes ringPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 0 0 var(--gold-glow);
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 1;
+    box-shadow: 0 0 0 14px rgba(196, 163, 90, 0);
+  }
+}
+
+.logo-img {
+  width: 84px; height: 84px;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  border-radius: 50%;
+  /*
+    CSS filter to make the logo visible and gold-tinted on dark bg.
+    If your logo is already colorful/visible, remove or adjust this.
+    - brightness(0) → makes it black silhouette
+    - invert(1)     → white silhouette
+    - sepia + hue   → warm gold tint
+  */
+  /* اللوجو أسود على أبيض:
+     invert(1)  → أبيض على أسود
+     mix-blend-mode: screen → يشيل الأسود تماماً
+     sepia + hue → تلوين ذهبي */
+  filter:
+    invert(1)
+    sepia(0.45) saturate(2.2) hue-rotate(4deg) brightness(1.1)
+    drop-shadow(0 0 16px rgba(196,163,90,0.75));
+  mix-blend-mode: screen;
+  transition: filter 0.4s ease, transform 0.4s var(--ease);
+}
+
+.logo-container:hover .logo-img {
+  transform: scale(1.06);
+  filter:
+    invert(1)
+    sepia(0.65) saturate(3) hue-rotate(4deg) brightness(1.25)
+    drop-shadow(0 0 26px rgba(232,201,122,1));
+  mix-blend-mode: screen;
+}
+
+/* ── Typography ──────────────────────────────────────────────── */
+.title-arabic {
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.8rem, 11vw, 4.2rem);
+  line-height: 1;
+  letter-spacing: -0.5px;
+  color: transparent;
+  background: linear-gradient(
+    135deg,
+    var(--gold-xlt) 0%,
+    var(--gold-lt)  25%,
+    var(--gold)     55%,
+    var(--gold-dk)  75%,
+    var(--gold-lt)  100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 2px 28px rgba(196,163,90,0.45));
+  margin-bottom: 0.3rem;
+}
+
+.title-latin {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.72rem;
+  letter-spacing: 9px;
+  color: var(--gold);
+  opacity: 0.55;
+  text-transform: uppercase;
+  margin-bottom: 0.65rem;
+}
+
+.subtitle {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 2.5px;
+}
+
+/* ── Divider ─────────────────────────────────────────────────── */
+.hero-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 1.6rem auto 0;
+  width: 180px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to left, var(--gold), transparent);
+  opacity: 0.4;
+}
+
+.divider-line:last-child {
+  background: linear-gradient(to right, var(--gold), transparent);
+}
+
+.divider-diamond {
+  width: 7px; height: 7px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.75;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ── Cards Section ───────────────────────────────────────────── */
+.cards-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+/* ── Link Card ───────────────────────────────────────────────── */
+.link-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 20px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  overflow: hidden;
+  cursor: none;
+
+  /* Glassmorphism */
+  background: var(--glass);
+  backdrop-filter: blur(28px) saturate(1.5);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.045);
+
+  /* GSAP sets opacity/transform initially */
+  opacity: 0;
+  transform: translateY(50px);
+
+  transition:
+    border-color 0.45s var(--ease),
+    background   0.45s var(--ease),
+    box-shadow   0.45s var(--ease);
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.link-card:hover {
+  background: var(--glass-hover);
+  border-color: var(--glass-border-h);
+  box-shadow:
+    0 10px 48px rgba(0,0,0,0.65),
+    0 0 0 1px rgba(196,163,90,0.28),
+    0 0 36px 3px rgba(196,163,90,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Shimmer sweep on hover */
+.card-shimmer {
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.055) 50%,
+    transparent 60%
+  );
+  transition: left 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.link-card:hover .card-shimmer {
+  left: 160%;
+}
+
+/* Colored inner glow per brand */
+.card-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  border-radius: var(--radius);
+  transition: opacity 0.45s var(--ease);
+  pointer-events: none;
+}
+
+.link-card:hover .card-glow { opacity: 1; }
+
+.card--facebook  .card-glow { background: radial-gradient(ellipse at 90% 50%, rgba(24,119,242,0.12) 0%, transparent 65%); }
+.card--tiktok    .card-glow { background: radial-gradient(ellipse at 90% 50%, rgba(0,210,210,0.08)  0%, transparent 65%); }
+.card--instapay  .card-glow { background: radial-gradient(ellipse at 90% 50%, rgba(107,47,217,0.12) 0%, transparent 65%); }
+.card--maps      .card-glow { background: radial-gradient(ellipse at 90% 50%, rgba(234,67,53,0.12)  0%, transparent 65%); }
+.card--review    .card-glow { background: radial-gradient(ellipse at 90% 50%, rgba(249,171,0,0.12)  0%, transparent 65%); }
+
+/* ── Icon Wrap ───────────────────────────────────────────────── */
+.card-icon-wrap {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.link-card:hover .card-icon-wrap {
+  transform: scale(1.14) rotate(-5deg);
+}
+
+/* Per-brand icon bg + glow */
+.card--facebook  .card-icon-wrap {
+  background: rgba(24,119,242,0.18);
+  box-shadow: 0 0 0 1px rgba(24,119,242,0.3);
+}
+.card--facebook:hover .card-icon-wrap {
+  box-shadow: 0 0 24px 2px rgba(24,119,242,0.4), 0 0 0 1px rgba(24,119,242,0.5);
+}
+
+.card--tiktok .card-icon-wrap {
+  background: rgba(18,18,18,0.75);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+}
+.card--tiktok:hover .card-icon-wrap {
+  box-shadow: 0 0 24px 2px rgba(0,210,210,0.3), 0 0 0 1px rgba(0,210,210,0.3);
+}
+
+.card--instapay .card-icon-wrap {
+  background: rgba(107,47,217,0.18);
+  box-shadow: 0 0 0 1px rgba(107,47,217,0.3);
+}
+.card--instapay:hover .card-icon-wrap {
+  box-shadow: 0 0 24px 2px rgba(107,47,217,0.4), 0 0 0 1px rgba(107,47,217,0.5);
+}
+
+.card--maps .card-icon-wrap {
+  background: rgba(234,67,53,0.18);
+  box-shadow: 0 0 0 1px rgba(234,67,53,0.3);
+}
+.card--maps:hover .card-icon-wrap {
+  box-shadow: 0 0 24px 2px rgba(234,67,53,0.4), 0 0 0 1px rgba(234,67,53,0.5);
+}
+
+.card--review .card-icon-wrap {
+  background: rgba(249,171,0,0.18);
+  box-shadow: 0 0 0 1px rgba(249,171,0,0.3);
+}
+.card--review:hover .card-icon-wrap {
+  box-shadow: 0 0 24px 2px rgba(249,171,0,0.4), 0 0 0 1px rgba(249,171,0,0.4);
+}
+
+/* ── Icons ───────────────────────────────────────────────────── */
+.card-icon {
+  font-size: 1.35rem;
+  transition: transform 0.4s var(--ease), filter 0.4s ease;
+}
+
+.link-card:hover .card-icon {
+  transform: scale(1.1);
+  filter: brightness(1.35);
+}
+
+/* Star pulses on hover */
+.card--review:hover .card-icon {
+  animation: starPulse 0.7s ease infinite alternate;
+}
+
+@keyframes starPulse {
+  from { transform: scale(1.0) rotate(0deg);   filter: brightness(1.2); }
+  to   { transform: scale(1.18) rotate(12deg); filter: brightness(1.6); }
+}
+
+.card--facebook  .card-icon { color: #6BA3F7; }
+.card--tiktok    .card-icon { color: #FFFFFF; }
+.card--instapay  .card-icon { color: #B08AEE; }
+.card--maps      .card-icon { color: #F28B82; }
+.card--review    .card-icon { color: #FDD663; }
+
+/* ── Card Text ───────────────────────────────────────────────── */
+.card-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: right;
+}
+
+.card-label {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  transition: color 0.4s ease;
+}
+
+.link-card:hover .card-label { color: #fff; }
+
+.card-sublabel {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.8px;
+  font-weight: 400;
+  direction: ltr;
+  text-align: left;
+  margin-right: auto;
+}
+
+/* ── Arrow ───────────────────────────────────────────────────── */
+.card-arrow {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  transition: transform 0.4s var(--ease), color 0.4s ease;
+}
+
+.link-card:hover .card-arrow {
+  color: var(--gold);
+  transform: translateX(-6px);
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer {
+  margin-top: 3rem;
+  text-align: center;
+  width: 100%;
+}
+
+.footer-line {
+  width: 60px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.2;
+  margin: 0 auto 1rem;
+}
+
+.footer-text {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 1.5px;
+  font-weight: 400;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 420px) {
+  .main-wrapper {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
+  }
+  .title-arabic { font-size: 2.6rem; }
+  .logo-container { width: 118px; height: 118px; }
+  .logo-img { width: 72px; height: 72px; }
+  .link-card { padding: 15px 16px; gap: 13px; }
+  .card-icon-wrap { width: 46px; height: 46px; border-radius: 12px; }
+  .card-icon { font-size: 1.2rem; }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .logo-ring-outer,
+  .logo-ring-mid,
+  .logo-ring-inner,
+  .orb {
+    animation: none;
+  }
+  .card-shimmer { transition: none; }
+}
